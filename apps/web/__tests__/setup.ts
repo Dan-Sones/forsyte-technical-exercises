@@ -1,10 +1,25 @@
 import { cleanup } from '@testing-library/react';
-import { afterEach, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+import { server } from './msw-server';
+import { router } from './router-mock';
+
+// Every request must hit a handler, so a test cannot reach a real API.
+beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
+afterAll(() => server.close());
 
 // Vitest runs without globals, so RTL cannot register its own cleanup.
 afterEach(() => {
   cleanup();
   intersectionObservers.length = 0;
+  server.resetHandlers();
+  window.sessionStorage.clear();
+  Object.values(router).forEach((fn) => fn.mockClear());
+});
+
+// The App Router is not mounted in tests. Assert on `router` instead.
+vi.mock('next/navigation', async () => {
+  const { router } = await import('./router-mock');
+  return { useRouter: () => router };
 });
 
 // jsdom has no layout, so these browser APIs are missing. The stubs below

@@ -10,7 +10,12 @@ import { EmptyState } from './empty-state';
 import { MessageThread } from './message-thread';
 import { SuggestionBar } from './suggestion-bar';
 
-export function AskForsyte({ client }: { client: AgentClient }) {
+type AskForsyteProps = {
+  client: AgentClient;
+  onLogout: () => void;
+};
+
+export function AskForsyte({ client, onLogout }: AskForsyteProps) {
   const { messages, isPending, error, send, retry, reset } =
     useAgentChat(client);
   const composerRef = useRef<ComposerHandle>(null);
@@ -29,7 +34,11 @@ export function AskForsyte({ client }: { client: AgentClient }) {
     // Three bands: header, scrolling thread, composer. h-dvh follows the
     // mobile keyboard and browser chrome.
     <div className="flex h-dvh flex-col bg-background text-foreground">
-      <ChatHeader onNewChat={startNewChat} newChatDisabled={isPending} />
+      <ChatHeader
+        onNewChat={startNewChat}
+        newChatDisabled={isPending}
+        onLogout={onLogout}
+      />
 
       <main className="flex min-h-0 flex-1 flex-col">
         {messages.length === 0 ? (

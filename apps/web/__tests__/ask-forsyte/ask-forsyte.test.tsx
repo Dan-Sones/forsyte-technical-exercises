@@ -9,7 +9,7 @@ import { agentMessage, createFakeAgentClient } from './fake-agent-client';
 function setup() {
   const fake = createFakeAgentClient();
   const user = userEvent.setup();
-  render(<AskForsyte client={fake.client} />);
+  render(<AskForsyte client={fake.client} onLogout={vi.fn()} />);
 
   const input = () =>
     screen.getByRole<HTMLTextAreaElement>('textbox', {
