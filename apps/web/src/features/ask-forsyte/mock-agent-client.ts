@@ -8,7 +8,11 @@ import {
 import type { Agent, AgentMessage, AgentSession } from './types';
 
 type MockAgentClientOptions = {
-  /** Fixed delay, or a function picking one per call. Defaults to 800–1600ms. */
+  /**
+   * How long sendMessage "thinks": a fixed delay, or a function picking one
+   * per call. Defaults to 800–1600ms. Session setup isn't delayed, so the
+   * first message doesn't take three delays.
+   */
   delayMs?: number | (() => number);
 };
 
@@ -37,13 +41,11 @@ export class MockAgentClient implements AgentClient {
   }
 
   async listAgents(org: string): Promise<Agent[]> {
-    await this.wait();
     const isKnownOrg = org === ORGANISATION_SLUG || org === ORGANISATION_ID;
     return isKnownOrg ? [...AGENTS] : [];
   }
 
   async createSession(_org: string, agentId: string): Promise<AgentSession> {
-    await this.wait();
     if (!AGENTS.some((agent) => agent.id === agentId)) {
       throw new Error('Agent not found');
     }
