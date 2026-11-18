@@ -7,13 +7,13 @@ import { AGENTS } from '@/features/ask-forsyte/fixtures';
 import type { AgentMessage, AgentSession } from '@/features/ask-forsyte/types';
 import { mockAgentApi } from './api';
 
-const ORG = 'bumble-law';
+const ORG = 'forsyte';
 const TOKEN = 'token-a';
 
 const SESSION: AgentSession = {
   id: 'ses_1',
   agentId: 'agt_wired_compliance',
-  organisationId: 'org_bumble_law',
+  organisationId: 'org_forsyte',
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 
@@ -56,7 +56,7 @@ describe('HttpAgentClient', () => {
       expect(api.requests).toEqual([
         {
           method: 'GET',
-          path: '/bumble-law/agents',
+          path: '/forsyte/agents',
           authorization: `Bearer ${TOKEN}`,
           accept: 'application/json',
           contentType: null,
@@ -75,7 +75,7 @@ describe('HttpAgentClient', () => {
       expect(api.requests).toEqual([
         {
           method: 'POST',
-          path: '/bumble-law/agents/agt_wired_compliance/sessions',
+          path: '/forsyte/agents/agt_wired_compliance/sessions',
           authorization: `Bearer ${TOKEN}`,
           accept: 'application/json',
           contentType: 'application/json',
@@ -94,7 +94,7 @@ describe('HttpAgentClient', () => {
       expect(api.requests).toEqual([
         {
           method: 'POST',
-          path: '/bumble-law/agents/sessions/ses_1/messages',
+          path: '/forsyte/agents/sessions/ses_1/messages',
           authorization: `Bearer ${TOKEN}`,
           accept: 'application/json',
           contentType: 'application/json',

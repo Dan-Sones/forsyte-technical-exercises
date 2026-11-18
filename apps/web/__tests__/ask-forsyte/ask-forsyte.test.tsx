@@ -45,7 +45,7 @@ describe('Ask Forsyte', () => {
     expect(input().value).toBe('');
     await waitFor(() =>
       expect(client.sendMessage).toHaveBeenCalledWith(
-        'bumble-law',
+        'forsyte',
         'ses_1',
         'Hello Forsyte'
       )
@@ -185,7 +185,7 @@ describe('Ask Forsyte', () => {
     expect(messages()).toEqual([['You', SUGGESTED_QUESTIONS[0]]]);
     await waitFor(() =>
       expect(client.sendMessage).toHaveBeenCalledWith(
-        'bumble-law',
+        'forsyte',
         'ses_1',
         SUGGESTED_QUESTIONS[0]
       )

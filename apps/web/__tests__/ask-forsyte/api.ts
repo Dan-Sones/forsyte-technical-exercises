@@ -13,35 +13,41 @@ export type RecordedRequest = {
   body: unknown;
 };
 
-type Reply =
+export type Reply =
   | { status: number; json: JsonBodyType }
   | { status: number; text: string }
   | 'network-error';
 
 /**
- * Answers every request to the API with `reply` and records what was sent.
+ * Answers every request to the API and records what was sent. `reply` is
+ * either the answer to everything, or a function that picks one per request.
  * `onRequest` runs before the reply, for tests that act mid-flight.
  */
-export function mockAgentApi(reply: Reply, onRequest?: () => void) {
+export function mockAgentApi(
+  reply: Reply | ((request: RecordedRequest) => Reply),
+  onRequest?: () => void
+) {
   const requests: RecordedRequest[] = [];
   server.use(
     http.all(`${API_BASE_URL}/*`, async ({ request }) => {
       const raw = await request.text();
-      requests.push({
+      const recorded: RecordedRequest = {
         method: request.method,
         path: request.url.slice(API_BASE_URL.length),
         authorization: request.headers.get('Authorization'),
         accept: request.headers.get('Accept'),
         contentType: request.headers.get('Content-Type'),
         body: raw === '' ? undefined : JSON.parse(raw),
-      });
+      };
+      requests.push(recorded);
       onRequest?.();
 
-      if (reply === 'network-error') return HttpResponse.error();
-      if ('text' in reply) {
-        return new HttpResponse(reply.text, { status: reply.status });
+      const answer = typeof reply === 'function' ? reply(recorded) : reply;
+      if (answer === 'network-error') return HttpResponse.error();
+      if ('text' in answer) {
+        return new HttpResponse(answer.text, { status: answer.status });
       }
-      return HttpResponse.json(reply.json, { status: reply.status });
+      return HttpResponse.json(answer.json, { status: answer.status });
     })
   );
   return { requests };
