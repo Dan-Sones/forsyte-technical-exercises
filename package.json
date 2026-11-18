@@ -6,7 +6,11 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "db:up": "docker compose up -d --wait db",
     "dev": "turbo run dev",
+    "dev:mock": "NEXT_PUBLIC_AGENT_CLIENT=mock turbo run dev",
+    "stack": "pnpm db:up && pnpm dev",
+    "stack:mock": "pnpm db:up && pnpm dev:mock",
     "lint": "turbo run lint",
     "test": "turbo run test"
   },

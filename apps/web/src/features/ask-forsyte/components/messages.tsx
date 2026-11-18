@@ -1,8 +1,11 @@
 'use client';
 
 import { Button, Label } from '@forsyteco/product-ui';
+import { useId } from 'react';
+import { DocumentIcon } from '../icons';
 import type { AgentMessageResource } from '../types';
 import { AgentAvatar } from './agent-avatar';
+import { Markdown } from './markdown';
 
 // Agent rows share one layout: a fixed avatar column, then the content, so
 // text, the thinking dots and errors all line up.
@@ -50,23 +53,54 @@ export function AgentMessage({
   return (
     <article aria-label="Forsyte">
       <AgentRow showAvatar={showAvatar}>
-        <p className="pt-1.5 leading-relaxed break-words whitespace-pre-wrap">
-          {text}
-        </p>
-        {resources && resources.length > 0 && (
-          // The hrefs are API paths, not app pages, so these aren't links yet.
-          <ul aria-label="Sources" className="mt-3 flex flex-wrap gap-2">
-            {resources.map((resource) => (
-              <li key={resource.rel}>
-                <Label className="py-1!">
-                  {describeResource(resource.rel)}
-                </Label>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="pt-1.5">
+          <Markdown text={text} />
+        </div>
+        {resources && resources.length > 0 && <Sources resources={resources} />}
       </AgentRow>
     </article>
+  );
+}
+
+const SOURCE_UNAVAILABLE = "Opening sources isn't available yet";
+
+// Sources are buttons so they read as actions, but the hrefs are API paths,
+// not app pages, so there is nothing to open yet. aria-disabled (not
+// disabled) keeps them focusable, and the description says why.
+function Sources({ resources }: { resources: AgentMessageResource[] }) {
+  const headingId = useId();
+  const unavailableId = useId();
+  return (
+    <div className="mt-3">
+      <p
+        id={headingId}
+        className="mb-1.5 text-sm font-semibold text-muted-foreground"
+      >
+        Sources
+      </p>
+      {/* Hidden from reading order; aria-describedby still reads it. */}
+      <span id={unavailableId} hidden>
+        {SOURCE_UNAVAILABLE}
+      </span>
+      <ul aria-labelledby={headingId} className="flex flex-wrap gap-2">
+        {resources.map((resource) => (
+          <li key={`${resource.rel} ${resource.href}`}>
+            <button
+              type="button"
+              aria-disabled="true"
+              aria-describedby={unavailableId}
+              title={SOURCE_UNAVAILABLE}
+              className="cursor-default rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Label className="gap-1.5 py-1!">
+                <DocumentIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                {describeResource(resource.rel)}
+              </Label>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

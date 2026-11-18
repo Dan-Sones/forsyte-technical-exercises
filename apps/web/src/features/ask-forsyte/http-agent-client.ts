@@ -36,7 +36,7 @@ const MESSAGES = {
   generic: 'Something went wrong. Try again.',
 };
 
-type HttpAgentClientOptions = {
+export type HttpAgentClientOptions = {
   /** Read before every request, so the client never holds a stale token. */
   getAccessToken: () => string | null;
   /**

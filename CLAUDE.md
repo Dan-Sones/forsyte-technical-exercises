@@ -2,6 +2,8 @@
 
 pnpm + Turborepo monorepo: `apps/web` (Next.js) and `apps/api` (NestJS). Run an app's scripts from the root with `pnpm --filter <web|api> <script>`.
 
+Run the whole stack with `pnpm stack` (Postgres, API, web). `pnpm stack:mock` is the same, but the chat answers from the web app's in-memory stub, which has markdown answers, instead of the API (`NEXT_PUBLIC_AGENT_CLIENT=mock`).
+
 ## Pre-commit hook
 
 Only `apps/web` is gated. The hook is `apps/web/.husky/pre-commit`, and it exits early unless the commit stages something under `apps/web/`. Commits that only touch `apps/api` or root files run no checks.

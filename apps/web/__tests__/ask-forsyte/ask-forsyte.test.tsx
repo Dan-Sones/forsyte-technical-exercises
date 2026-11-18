@@ -121,7 +121,7 @@ describe('Ask Forsyte', () => {
     ]);
   });
 
-  test("shows the agent's sources as labels", async () => {
+  test("shows the agent's sources", async () => {
     const { user, input, client, reply } = setup();
 
     await user.type(input(), 'Outstanding assessments?{Enter}');

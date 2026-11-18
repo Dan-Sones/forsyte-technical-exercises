@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import LoginPage from '@/app/login/page';
 import Page from '@/app/page';
 import { AGENTS } from '@/features/ask-forsyte/fixtures';
@@ -55,6 +55,8 @@ async function ask(question: string) {
 }
 
 describe('Home page', () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   test('a signed-in user sees the Ask Forsyte assistant', () => {
     sessionStorage.setItem(STORAGE_KEY, validToken());
     renderHome();
@@ -127,6 +129,25 @@ describe('Home page', () => {
     expect(
       api.requests.every((r) => r.authorization === `Bearer ${token}`)
     ).toBe(true);
+  });
+
+  test('NEXT_PUBLIC_AGENT_CLIENT=mock answers from the stub, not the API', async () => {
+    vi.stubEnv('NEXT_PUBLIC_AGENT_CLIENT', 'mock');
+    sessionStorage.setItem(STORAGE_KEY, validToken());
+    const api = mockAgentApi({ status: 500, json: {} });
+    renderHome();
+
+    await ask(QUESTION);
+
+    // The stub's answer is markdown, so its link proves where it came from.
+    expect(
+      await screen.findByRole(
+        'link',
+        { name: 'FATF high-risk jurisdictions list' },
+        { timeout: 3000 }
+      )
+    ).toBeDefined();
+    expect(api.requests).toEqual([]);
   });
 
   test('a 401 mid-chat signs out and explains on the login page', async () => {
