@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 import { useAgentChat } from '@/features/ask-forsyte/use-agent-chat';
-import { ORGANISATION_SLUG } from '@/features/ask-forsyte/fixtures';
+import { ORGANISATION_SLUG } from '@/features/ask-forsyte/config';
 import { agentMessage, createFakeAgentClient } from './fake-agent-client';
 
 function setup(options?: Parameters<typeof useAgentChat>[1]) {

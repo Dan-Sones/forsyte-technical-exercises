@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { AgentClient } from './agent-client';
-import { ORGANISATION_SLUG, WIRED_AGENT_SLUG } from './fixtures';
+import { ORGANISATION_SLUG, WIRED_AGENT_SLUG } from './config';
 import type { AgentMessage } from './types';
 
 export type ChatError = { message: string; failedMessageId: string };

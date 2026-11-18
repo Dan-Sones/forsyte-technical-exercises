@@ -9,7 +9,7 @@ import { agentMessage, createFakeAgentClient } from './fake-agent-client';
 function setup() {
   const fake = createFakeAgentClient();
   const user = userEvent.setup();
-  render(<AskForsyte client={fake.client} />);
+  render(<AskForsyte client={fake.client} onLogout={vi.fn()} />);
 
   const input = () =>
     screen.getByRole<HTMLTextAreaElement>('textbox', {
@@ -45,7 +45,7 @@ describe('Ask Forsyte', () => {
     expect(input().value).toBe('');
     await waitFor(() =>
       expect(client.sendMessage).toHaveBeenCalledWith(
-        'bumble-law',
+        'forsyte',
         'ses_1',
         'Hello Forsyte'
       )
@@ -185,7 +185,7 @@ describe('Ask Forsyte', () => {
     expect(messages()).toEqual([['You', SUGGESTED_QUESTIONS[0]]]);
     await waitFor(() =>
       expect(client.sendMessage).toHaveBeenCalledWith(
-        'bumble-law',
+        'forsyte',
         'ses_1',
         SUGGESTED_QUESTIONS[0]
       )

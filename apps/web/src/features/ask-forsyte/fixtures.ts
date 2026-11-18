@@ -1,11 +1,10 @@
+import { WIRED_AGENT_SLUG } from './config';
 import type { Agent, AgentMessageContent } from './types';
 
 // Copied from apps/api: the seeded agents and organisation (prisma/seed.ts)
 // and the scripted journey (modules/agent/application/agent.service.ts).
 
-export const ORGANISATION_SLUG = 'bumble-law';
-export const ORGANISATION_ID = 'org_bumble_law';
-export const WIRED_AGENT_SLUG = 'wired-agent';
+export const ORGANISATION_ID = 'org_forsyte';
 
 const MODEL = 'forsyte.ask-forsyte-mock-1-alpha-v5';
 const SEEDED_AT = '2026-01-01T00:00:00.000Z';
