@@ -1,0 +1,6 @@
+# Git runs hooks from the repo root; only check the web app when it has staged changes.
+git diff --cached --quiet -- apps/web && exit 0
+
+pnpm --filter web exec lint-staged
+pnpm --filter web typecheck
+pnpm --filter web exec vitest run
