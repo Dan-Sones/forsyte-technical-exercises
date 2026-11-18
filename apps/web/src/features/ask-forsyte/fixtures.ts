@@ -3,6 +3,9 @@ import type { Agent, AgentMessageContent } from './types';
 
 // Copied from apps/api: the seeded agents and organisation (prisma/seed.ts)
 // and the scripted journey (modules/agent/application/agent.service.ts).
+// The answers the chat shows (the last part of each) add markdown that the
+// API's plain text lacks, so the stub exercises the renderer. The last one
+// also carries unsafe input (raw HTML, a javascript: link, an image).
 
 export const ORGANISATION_ID = 'org_forsyte';
 
@@ -39,7 +42,7 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     question: 'Do I have matters in high risk jurisdictions?',
     answers: [
       {
-        text: 'Yes, you have 3 matters on your Forsyte book. Two of those matters have indicators that they may involve higher-risk jurisdictions based on their risk assessments.',
+        text: "Yes, you have 3 matters on your **Forsyte** book. Two of them have indicators of *higher-risk jurisdictions*:\n\n1. **Beekeeper employment contract**\n   - Remote onboarding\n   - High-risk third country residence\n2. **Hive acquisition**\n   - Counterparty in a monitored jurisdiction\n\n> Jurisdiction risk comes from each matter's latest risk assessment.\n\nFor context, see the [FATF high-risk jurisdictions list](https://www.fatf-gafi.org/en/countries/black-and-grey-lists.html).",
         meta: { model: MODEL, finishReason: 'stop' },
       },
     ],
@@ -48,7 +51,7 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     question: 'How many of those have outstanding risk assessments?',
     answers: [
       {
-        text: 'Out of your 3 seeded matters, 2 currently have risk assessments in progress and 1 has a completed high-risk assessment.\n\nYou can review the outstanding matters and their assessments using the link below.',
+        text: '## Outstanding risk assessments\n\nOut of your 3 seeded matters:\n\n- **2** have risk assessments `in_progress`\n- **1** has a completed **high-risk** assessment\n\n| Status | Matters |\n| --- | --- |\n| In progress | 2 |\n| Completed (high risk) | 1 |\n\nYou can review the outstanding matters and their assessments using the link below.',
         resources: [
           {
             rel: 'mattersWithOutstandingRiskAssessments',
@@ -74,7 +77,7 @@ export const JOURNEY_STEPS: JourneyStep[] = [
         meta: { model: MODEL, finishReason: 'length' },
       },
       {
-        text: 'Overall, the Beekeeper employment contract has a completed, high-risk assessment driven mainly by remote onboarding and outstanding screening checks. Typical next steps would include resolving the pending identity and adverse media checks and documenting a clear risk-based rationale before proceeding.',
+        text: 'Overall, the Beekeeper employment contract has a completed, **high-risk** assessment driven mainly by:\n\n- remote onboarding\n- outstanding screening checks\n\n### Typical next steps\n\n1. Resolve the pending *identity* and *adverse media* checks.\n2. Document a clear risk-based rationale before proceeding.\n\n```\nriskAssessment: beekeeper-employment-contract\nstatus: completed\nrisk: high\npending: [adverseMedia, highRiskThirdCountryResidence]\n```',
         resources: [
           {
             rel: 'riskAssessmentDetails',
@@ -100,7 +103,7 @@ export const JOURNEY_STEPS: JourneyStep[] = [
         meta: { model: MODEL, finishReason: 'length' },
       },
       {
-        text: 'In summary, you should (1) prioritise clearing outstanding risk assessment actions on the 2 in-progress matters, (2) review and document your position on the completed high-risk Beekeeper employment contract, and (3) ensure ownership of each matter is clear so follow-up reviews happen promptly.',
+        text: 'In summary, you should:\n\n1. Prioritise clearing outstanding risk assessment actions on the **2** in-progress matters.\n2. Review and document your position on the completed high-risk *Beekeeper employment contract*.\n3. Ensure ownership of each matter is clear so follow-up reviews happen promptly.\n\n---\n\n**Safety checks (stub only):** raw HTML <b onclick="alert(1)">should show as text</b>, an [unsafe link](javascript:alert(1)), a [relative link](/matters), an image ![Risk chart](https://example.com/chart.png), and a long token: `riskAssessmentStatus=in_progress&organisationSlug=forsyte&includeFlags=true&sort=-updatedAt`.',
         resources: [
           {
             rel: 'allSeededRiskAssessments',
