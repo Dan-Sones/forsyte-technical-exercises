@@ -33,3 +33,6 @@ Thumbs.db
 
 # Generated code
 generated
+
+# Vendored read-only clones (reference only)
+vendor
