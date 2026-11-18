@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import LoginPage from '@/app/login/page';
-import { AuthProvider } from '@/features/auth/auth-context';
+import { AuthProvider, useAuth } from '@/features/auth/auth-context';
 import { router } from '../router-mock';
 import {
   mockLoginApi,
@@ -14,6 +14,12 @@ import {
 import { validToken } from './fake-jwt';
 
 const STORAGE_KEY = 'ask-forsyte-access-token';
+
+/** Stands in for an API client that got a 401 for this token. */
+function ExpireButton({ token }: { token: string }) {
+  const { expireSession } = useAuth();
+  return <button onClick={() => expireSession(token)}>Expire</button>;
+}
 
 function setup() {
   const user = userEvent.setup();
@@ -123,6 +129,30 @@ describe('Login page', () => {
 
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
     expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  test('explains when the session expired', async () => {
+    const token = validToken();
+    sessionStorage.setItem(STORAGE_KEY, token);
+    const user = userEvent.setup();
+    render(
+      <AuthProvider>
+        <ExpireButton token={token} />
+        <LoginPage />
+      </AuthProvider>
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Expire' }));
+
+    expect((await screen.findByRole('status')).textContent).toBe(
+      'Your session has expired. Sign in again to continue.'
+    );
+  });
+
+  test('says nothing about expiry on a normal visit', () => {
+    setup();
+
+    expect(screen.queryByRole('status')).toBeNull();
   });
 
   test('an already signed-in user is sent to the chat', async () => {

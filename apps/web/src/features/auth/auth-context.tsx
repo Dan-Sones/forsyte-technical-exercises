@@ -9,18 +9,31 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { requestAccessToken } from './login-request';
-import { createSessionStore } from './session-store';
+import { createSessionStore, type Session } from './session-store';
 
 export type AuthState =
   /** sessionStorage has not been read yet (server render and hydration). */
   | { status: 'loading' }
-  | { status: 'unauthenticated' }
+  /** `reason` is set when the API ended the session, not the user. */
+  | { status: 'unauthenticated'; reason?: 'expired' }
   | { status: 'authenticated'; accessToken: string };
 
 export type Auth = AuthState & {
   /** Resolves once signed in. Rejects with a LoginError. */
   login(email: string, password: string): Promise<void>;
   logout(): void;
+  /**
+   * The token right now, or null when signed out. The function itself never
+   * changes, so long-lived objects such as API clients can hold on to it.
+   */
+  getAccessToken(): string | null;
+  /**
+   * For code outside this context that made a request and got a 401: signs
+   * out with `reason: 'expired'`. Pass the token the request used. If the
+   * user has signed in again since, it is not the current token and nothing
+   * happens.
+   */
+  expireSession(token: string): void;
 };
 
 const AuthContext = createContext<Auth | null>(null);
@@ -31,7 +44,7 @@ const getServerSnapshot = () => undefined;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [store] = useState(() => createSessionStore());
-  const token = useSyncExternalStore(
+  const session = useSyncExternalStore(
     store.subscribe,
     store.getSnapshot,
     getServerSnapshot
@@ -44,10 +57,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [store]
   );
   const logout = useCallback(() => store.clear(), [store]);
+  const getAccessToken = useCallback(() => store.getSnapshot().token, [store]);
+  const expireSession = useCallback(
+    (token: string) => store.expire(token),
+    [store]
+  );
 
   const auth = useMemo<Auth>(
-    () => ({ ...toState(token), login, logout }),
-    [token, login, logout]
+    () => ({
+      ...toState(session),
+      login,
+      logout,
+      getAccessToken,
+      expireSession,
+    }),
+    [session, login, logout, getAccessToken, expireSession]
   );
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
@@ -59,8 +83,12 @@ export function useAuth(): Auth {
   return auth;
 }
 
-function toState(token: string | null | undefined): AuthState {
-  if (token === undefined) return { status: 'loading' };
-  if (token === null) return { status: 'unauthenticated' };
-  return { status: 'authenticated', accessToken: token };
+function toState(session: Session | undefined): AuthState {
+  if (session === undefined) return { status: 'loading' };
+  if (session.token !== null) {
+    return { status: 'authenticated', accessToken: session.token };
+  }
+  return session.expired
+    ? { status: 'unauthenticated', reason: 'expired' }
+    : { status: 'unauthenticated' };
 }
