@@ -8,6 +8,7 @@ import { ChatHeader } from './chat-header';
 import { Composer, type ComposerHandle } from './composer';
 import { EmptyState } from './empty-state';
 import { MessageThread } from './message-thread';
+import { SuggestionBar } from './suggestion-bar';
 
 export function AskForsyte({ client }: { client: AgentClient }) {
   const { messages, isPending, error, send, retry, reset } =
@@ -47,6 +48,13 @@ export function AskForsyte({ client }: { client: AgentClient }) {
 
         <div className="shrink-0 bg-background pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <div className="mx-auto w-full max-w-3xl px-4">
+            {messages.length > 0 && (
+              <SuggestionBar
+                questions={SUGGESTED_QUESTIONS}
+                disabled={isPending}
+                onSelect={askSuggestion}
+              />
+            )}
             <Composer ref={composerRef} onSend={send} isPending={isPending} />
           </div>
         </div>

@@ -192,6 +192,48 @@ describe('Ask Forsyte', () => {
     );
   });
 
+  test('keeps every suggested question above the input once the chat starts', async () => {
+    const { user, answer } = setup();
+    const nextBar = () =>
+      screen.queryByRole('list', { name: 'Suggested next questions' });
+    const chips = () =>
+      within(nextBar()!).getAllByRole<HTMLButtonElement>('button');
+    const userMessages = () =>
+      within(screen.getByRole('log'))
+        .getAllByRole('article', { name: 'You' })
+        .map((a) => a.textContent);
+
+    // The empty state already lists every question.
+    expect(nextBar()).toBeNull();
+
+    await user.click(
+      screen.getByRole('button', { name: SUGGESTED_QUESTIONS[0] })
+    );
+
+    // Asked questions stay available, so they can be asked again.
+    expect(chips().map((chip) => chip.textContent)).toEqual(
+      SUGGESTED_QUESTIONS
+    );
+    // No steering: you can't pick another question mid-reply.
+    expect(chips().every((chip) => chip.disabled)).toBe(true);
+
+    await answer(2, 'Yes, you have 3 matters.');
+    await user.click(
+      within(nextBar()!).getByRole('button', { name: SUGGESTED_QUESTIONS[0] })
+    );
+
+    expect(userMessages()).toEqual([
+      SUGGESTED_QUESTIONS[0],
+      SUGGESTED_QUESTIONS[0],
+    ]);
+    expect(chips().map((chip) => chip.textContent)).toEqual(
+      SUGGESTED_QUESTIONS
+    );
+    expect(document.activeElement).toBe(
+      screen.getByRole('textbox', { name: 'Message Ask Forsyte' })
+    );
+  });
+
   test('New chat clears the conversation, but not mid-reply', async () => {
     const { user, input, answer } = setup();
     const newChat = () =>
