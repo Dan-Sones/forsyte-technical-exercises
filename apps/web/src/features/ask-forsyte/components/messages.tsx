@@ -58,7 +58,9 @@ export function AgentMessage({
           <ul aria-label="Sources" className="mt-3 flex flex-wrap gap-2">
             {resources.map((resource) => (
               <li key={resource.rel}>
-                <Label size="sm">{describeResource(resource.rel)}</Label>
+                <Label className="py-1!">
+                  {describeResource(resource.rel)}
+                </Label>
               </li>
             ))}
           </ul>
