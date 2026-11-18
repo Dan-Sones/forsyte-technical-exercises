@@ -1,6 +1,8 @@
 'use client';
 
 import { Button, Label } from '@forsyteco/product-ui';
+import { useId } from 'react';
+import { DocumentIcon } from '../icons';
 import type { AgentMessageResource } from '../types';
 import { AgentAvatar } from './agent-avatar';
 import { Markdown } from './markdown';
@@ -54,20 +56,34 @@ export function AgentMessage({
         <div className="pt-1.5">
           <Markdown text={text} />
         </div>
-        {resources && resources.length > 0 && (
-          // The hrefs are API paths, not app pages, so these aren't links yet.
-          <ul aria-label="Sources" className="mt-3 flex flex-wrap gap-2">
-            {resources.map((resource) => (
-              <li key={resource.rel}>
-                <Label className="py-1!">
-                  {describeResource(resource.rel)}
-                </Label>
-              </li>
-            ))}
-          </ul>
-        )}
+        {resources && resources.length > 0 && <Sources resources={resources} />}
       </AgentRow>
     </article>
+  );
+}
+
+// The hrefs are API paths, not app pages, so these are labels, not links.
+function Sources({ resources }: { resources: AgentMessageResource[] }) {
+  const headingId = useId();
+  return (
+    <div className="mt-3">
+      <p
+        id={headingId}
+        className="mb-1.5 text-sm font-semibold text-muted-foreground"
+      >
+        Sources
+      </p>
+      <ul aria-labelledby={headingId} className="flex flex-wrap gap-2">
+        {resources.map((resource) => (
+          <li key={`${resource.rel} ${resource.href}`}>
+            <Label className="gap-1.5 py-1!">
+              <DocumentIcon className="size-3.5 shrink-0 text-muted-foreground" />
+              {describeResource(resource.rel)}
+            </Label>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

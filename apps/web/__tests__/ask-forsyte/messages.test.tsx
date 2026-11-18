@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import {
   AgentMessage,
   UserMessage,
@@ -86,6 +86,67 @@ describe('AgentMessage markdown', () => {
 
     expect(message.querySelector('img[src*="chart"]')).toBeNull();
     expect(within(message).getByText('Risk chart')).toBeDefined();
+  });
+});
+
+describe('AgentMessage sources', () => {
+  const resources = [
+    {
+      rel: 'mattersWithOutstandingRiskAssessments',
+      href: '/v1/matters?riskAssessmentStatus=in_progress',
+    },
+    { rel: 'riskAssessmentDetails', href: '/v1/risk-assessments/1' },
+  ];
+
+  test('lists them under a visible Sources heading', () => {
+    render(<AgentMessage text="See below." resources={resources} showAvatar />);
+    const message = screen.getByRole('article', { name: 'Forsyte' });
+
+    const heading = within(message).getByText('Sources');
+    const sources = within(message).getByRole('list', { name: 'Sources' });
+    expect(sources.getAttribute('aria-labelledby')).toBe(heading.id);
+    expect(
+      within(sources)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent)
+    ).toEqual([
+      'Matters with outstanding risk assessments',
+      'Risk assessment details',
+    ]);
+  });
+
+  test('are labels, not links or buttons', () => {
+    render(<AgentMessage text="See below." resources={resources} showAvatar />);
+    const sources = screen.getByRole('list', { name: 'Sources' });
+
+    expect(within(sources).queryByRole('link')).toBeNull();
+    expect(within(sources).queryByRole('button')).toBeNull();
+  });
+
+  test('keeps resources that share a rel', () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <AgentMessage
+        text="Two assessments."
+        resources={[
+          { rel: 'riskAssessmentDetails', href: '/v1/risk-assessments/1' },
+          { rel: 'riskAssessmentDetails', href: '/v1/risk-assessments/2' },
+        ]}
+        showAvatar
+      />
+    );
+
+    const sources = screen.getByRole('list', { name: 'Sources' });
+    expect(within(sources).getAllByRole('listitem')).toHaveLength(2);
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
+  });
+
+  test('shows no Sources heading without resources', () => {
+    render(<AgentMessage text="Plain answer." resources={[]} showAvatar />);
+
+    expect(screen.queryByText('Sources')).toBeNull();
+    expect(screen.queryByRole('list', { name: 'Sources' })).toBeNull();
   });
 });
 
