@@ -3,6 +3,7 @@
 import { Button, Label } from '@forsyteco/product-ui';
 import type { AgentMessageResource } from '../types';
 import { AgentAvatar } from './agent-avatar';
+import { Markdown } from './markdown';
 
 // Agent rows share one layout: a fixed avatar column, then the content, so
 // text, the thinking dots and errors all line up.
@@ -50,9 +51,9 @@ export function AgentMessage({
   return (
     <article aria-label="Forsyte">
       <AgentRow showAvatar={showAvatar}>
-        <p className="pt-1.5 leading-relaxed break-words whitespace-pre-wrap">
-          {text}
-        </p>
+        <div className="pt-1.5">
+          <Markdown text={text} />
+        </div>
         {resources && resources.length > 0 && (
           // The hrefs are API paths, not app pages, so these aren't links yet.
           <ul aria-label="Sources" className="mt-3 flex flex-wrap gap-2">
