@@ -90,6 +90,18 @@ pnpm dev --filter api   # NestJS API on http://localhost:8174
 pnpm dev --filter web   # Next.js app on http://localhost:3891
 ```
 
+**Choosing where chat answers come from.** By default the chat talks to the API. In mock mode it answers from the in-memory stub in `apps/web`, whose answers include markdown (lists, tables, code, links) and some unsafe input, to exercise the renderer. Sign-in uses the API in both modes, so the API still runs.
+
+```bash
+pnpm stack        # start Postgres (docker compose), then API + web against the API
+pnpm stack:mock   # the same, with chat answers from the stub
+
+pnpm dev:mock     # API + web in mock mode, if Postgres is already running
+pnpm db:up        # start only Postgres
+```
+
+The mode is read when the web dev server starts, so switching means restarting it. You can also set `NEXT_PUBLIC_AGENT_CLIENT=mock` in `apps/web/.env.local` (see `apps/web/.env.example`).
+
 > **Non-standard ports**: This project deliberately uses ports **8174** (API) and **3891** (web) instead of the usual 8000/3000 to avoid clashing with other local projects that use the same tech stack. Make sure you use these ports when accessing the apps in your browser:
 >
 > - Web app: [http://localhost:3891](http://localhost:3891)
