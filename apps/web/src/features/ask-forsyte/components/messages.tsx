@@ -62,9 +62,14 @@ export function AgentMessage({
   );
 }
 
-// The hrefs are API paths, not app pages, so these are labels, not links.
+const SOURCE_UNAVAILABLE = "Opening sources isn't available yet";
+
+// Sources are buttons so they read as actions, but the hrefs are API paths,
+// not app pages, so there is nothing to open yet. aria-disabled (not
+// disabled) keeps them focusable, and the description says why.
 function Sources({ resources }: { resources: AgentMessageResource[] }) {
   const headingId = useId();
+  const unavailableId = useId();
   return (
     <div className="mt-3">
       <p
@@ -73,13 +78,25 @@ function Sources({ resources }: { resources: AgentMessageResource[] }) {
       >
         Sources
       </p>
+      {/* Hidden from reading order; aria-describedby still reads it. */}
+      <span id={unavailableId} hidden>
+        {SOURCE_UNAVAILABLE}
+      </span>
       <ul aria-labelledby={headingId} className="flex flex-wrap gap-2">
         {resources.map((resource) => (
           <li key={`${resource.rel} ${resource.href}`}>
-            <Label className="gap-1.5 py-1!">
-              <DocumentIcon className="size-3.5 shrink-0 text-muted-foreground" />
-              {describeResource(resource.rel)}
-            </Label>
+            <button
+              type="button"
+              aria-disabled="true"
+              aria-describedby={unavailableId}
+              title={SOURCE_UNAVAILABLE}
+              className="cursor-default rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Label className="gap-1.5 py-1!">
+                <DocumentIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                {describeResource(resource.rel)}
+              </Label>
+            </button>
           </li>
         ))}
       </ul>

@@ -116,12 +116,28 @@ describe('AgentMessage sources', () => {
     ]);
   });
 
-  test('are labels, not links or buttons', () => {
+  test('are buttons, marked unavailable because sources cannot open yet', () => {
     render(<AgentMessage text="See below." resources={resources} showAvatar />);
     const sources = screen.getByRole('list', { name: 'Sources' });
 
+    const buttons = within(sources).getAllByRole('button');
+    expect(buttons.map((button) => button.textContent)).toEqual([
+      'Matters with outstanding risk assessments',
+      'Risk assessment details',
+    ]);
+    for (const button of buttons) {
+      // aria-disabled, not disabled: the button stays focusable, so screen
+      // reader users still find it and hear why it does nothing.
+      expect(button.getAttribute('aria-disabled')).toBe('true');
+      expect(button.hasAttribute('disabled')).toBe(false);
+      const description = document.getElementById(
+        button.getAttribute('aria-describedby') ?? ''
+      );
+      expect(description?.textContent).toBe(
+        "Opening sources isn't available yet"
+      );
+    }
     expect(within(sources).queryByRole('link')).toBeNull();
-    expect(within(sources).queryByRole('button')).toBeNull();
   });
 
   test('keeps resources that share a rel', () => {
