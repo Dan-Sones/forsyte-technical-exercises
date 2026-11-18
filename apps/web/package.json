@@ -14,10 +14,11 @@
     "prepare": "cd ../.. && husky apps/web/.husky"
   },
   "dependencies": {
-    "@forsyteco/product-ui": "^0.0.13",
+    "@forsyteco/product-ui": "^0.0.18",
     "next": "^15.0.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "sonner": "^2.0.8",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
