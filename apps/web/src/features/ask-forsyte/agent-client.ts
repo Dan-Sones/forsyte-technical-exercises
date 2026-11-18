@@ -2,7 +2,10 @@ import type { Agent, AgentMessage, AgentSession } from './types';
 
 /**
  * The seam between the chat UI and the agent API. Exercise 1 uses
- * MockAgentClient; exercise 2 adds an HTTP implementation.
+ * MockAgentClient; exercise 2 adds HttpAgentClient.
+ *
+ * TODO: to make requests cancellable, give each method an optional
+ * `{ signal?: AbortSignal }` and pass it through to fetch.
  */
 export interface AgentClient {
   listAgents(org: string): Promise<Agent[]>;
