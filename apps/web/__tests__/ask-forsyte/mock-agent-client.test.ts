@@ -3,7 +3,7 @@ import { MockAgentClient } from '@/features/ask-forsyte/mock-agent-client';
 import {
   ORGANISATION_SLUG,
   WIRED_AGENT_SLUG,
-} from '@/features/ask-forsyte/fixtures';
+} from '@/features/ask-forsyte/config';
 
 const FIRST_QUESTION = 'Do I have matters in high risk jurisdictions?';
 const SECOND_QUESTION = 'How many of those have outstanding risk assessments?';

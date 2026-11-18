@@ -1,10 +1,6 @@
 import type { AgentClient } from './agent-client';
-import {
-  AGENTS,
-  JOURNEY_STEPS,
-  ORGANISATION_ID,
-  ORGANISATION_SLUG,
-} from './fixtures';
+import { ORGANISATION_SLUG } from './config';
+import { AGENTS, JOURNEY_STEPS, ORGANISATION_ID } from './fixtures';
 import type { Agent, AgentMessage, AgentSession } from './types';
 
 type MockAgentClientOptions = {
