@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare": "cd ../.. && husky apps/web/.husky"
   },
   "dependencies": {
     "@forsyteco/product-ui": "^0.0.13",
@@ -30,7 +31,9 @@
     "eslint": "^10.15.0",
     "eslint-config-next": "^16.4.6",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "jsdom": "^31.0.1",
+    "lint-staged": "^17.6.1",
     "prettier": "^3.10.1",
     "typescript": "^5.7.2",
     "vite": "^8.3.8",
