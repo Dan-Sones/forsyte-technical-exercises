@@ -1,3 +1,24 @@
 @import '@forsyteco/product-ui/styles.css';
 @import '@forsyteco/product-ui/components.css';
 @source '../../node_modules/@forsyteco/product-ui/dist';
+
+/*
+ * Chat tokens, as RGB triplets like product-ui's. product-ui's `dark:` variant
+ * only matches the element carrying data-colour-mode (<html>), so dark styles
+ * for descendants switch tokens here instead.
+ */
+:root {
+  --chat-user-bubble: var(--primary);
+  --chat-user-bubble-foreground: var(--primary-foreground);
+}
+
+:root:where([data-colour-mode='dark']) {
+  /* A white bubble on a dark page fights the composer, so use muted grey. */
+  --chat-user-bubble: var(--muted);
+  --chat-user-bubble-foreground: var(--foreground);
+}
+
+@theme inline {
+  --color-user-bubble: rgb(var(--chat-user-bubble));
+  --color-user-bubble-foreground: rgb(var(--chat-user-bubble-foreground));
+}
