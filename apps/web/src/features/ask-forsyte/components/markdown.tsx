@@ -34,6 +34,9 @@ function isExternal(href: string | undefined) {
 }
 
 function Link(props: MarkdownProps<'a'>) {
+  // urlTransform blanks unsafe URLs. An <a href=""> would still look like a
+  // link and reload the page when clicked, so show its text instead.
+  if (!props.href) return <>{props.children}</>;
   return (
     <a
       {...withoutNode(props)}

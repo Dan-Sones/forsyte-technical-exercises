@@ -56,12 +56,13 @@ describe('AgentMessage markdown', () => {
     expect(message.querySelector('[onclick]')).toBeNull();
   });
 
-  test('strips javascript: links', () => {
-    const message = renderAgent('[Click me](javascript:alert(1))');
+  test('shows an unsafe link as plain text', () => {
+    const message = renderAgent(
+      'Try [javascript](javascript:alert(1)), [data](data:text/html,x) or [vb](vbscript:msgbox(1)).'
+    );
 
-    const anchor = message.querySelector('a');
-    expect(anchor?.textContent).toBe('Click me');
-    expect(anchor?.getAttribute('href') ?? '').not.toMatch(/javascript:/i);
+    expect(message.querySelector('a')).toBeNull();
+    expect(message.textContent).toContain('Try javascript, data or vb.');
   });
 
   test('opens outside links in a new tab', () => {
