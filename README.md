@@ -1,5 +1,9 @@
 ## Forsyte Exercises
 
+### Implementation Notes
+
+For my decisions, trade-offs and known issues, see [IMPLEMENTATION-NOTES.md](./IMPLEMENTATION-NOTES.md).
+
 This repository is a small monorepo used for frontend exercises on top of a realistic backend.
 
 - **Root**: orchestrates workspaces with Turbo and pnpm.
